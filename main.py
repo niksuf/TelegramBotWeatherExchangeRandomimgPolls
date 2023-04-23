@@ -1,8 +1,9 @@
+# Главный файл
 from aiogram import Bot, Dispatcher, executor
-from config import telegram_token
+from config import telegram_token, proxy_url
 
 # Создание объекта бота
-bot = Bot(telegram_token)
+bot = Bot(token=telegram_token, proxy=proxy_url)
 dp = Dispatcher(bot)
 
 

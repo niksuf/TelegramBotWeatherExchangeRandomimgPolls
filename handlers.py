@@ -1,3 +1,4 @@
+# Файл с хендлерами
 from aiogram import types
 from aiogram.dispatcher.filters import Text
 import requests
@@ -16,7 +17,10 @@ exchange_flag = False
 # Команда /start
 @dp.message_handler(commands=['start'])
 async def start_command(message: types.Message):
-    await message.answer(text="<b>Добро пожаловать</b> в мой телеграм бот!",
+    await message.answer(text="<b>Добро пожаловать</b> в мой телеграм бот!\n"
+                              "Бот умеет показывать погоду в определенном городе, показывать курсы валют,"
+                              "отправлять фотографии милых животных и создавать опросы!\n"
+                              "Попробуйте скорее все возможности!",
                          parse_mode='HTML',
                          reply_markup=kb)
 
@@ -56,6 +60,10 @@ async def send_exchange(message: types.Message):
 async def main_menu(message: types.Message):
     await message.answer(text='Вы в главном меню!',
                          reply_markup=kb)
+    global weather_flag
+    global exchange_flag
+    weather_flag = False
+    exchange_flag = False
 
 
 # Кнопка случайной картинки
@@ -83,6 +91,7 @@ async def create_poll(message: types.Message):
 @dp.message_handler(Text)
 async def weather_and_exchange(message: types.Message):
     global weather_flag
+    global exchange_flag
     if weather_flag is True:  # Проверяем выбрал ли пользователь погоду
         weather_flag = False
         code_to_smile = {
@@ -126,14 +135,13 @@ async def weather_and_exchange(message: types.Message):
         except:
             await message.reply("\U00002620 Проверьте название города \U00002620",
                                 reply_markup=kb_back)
-    global exchange_flag
-    if exchange_flag is True:  # Проверяем выбрал ли пользователь курсы валют
+    elif exchange_flag is True:  # Проверяем выбрал ли пользователь курсы валют
         exchange_flag = False
         payload = {}
         headers = {"apikey": exchange_rate_token}
-        coin1, coin2 = message.text.split()
         # try - except блок (чтобы если что обработать ошибки)
         try:
+            coin1, coin2 = message.text.split()
             # Сразу пишем сообщение, что бот пошел получать курсы, т.к. они приходят иногда не мгновенно
             await message.reply("Получаю курсы валют...",
                                 reply_markup=kb_back)
@@ -152,6 +160,12 @@ async def weather_and_exchange(message: types.Message):
             else:
                 await message.reply('Что-то пошло не так, попробуйте заново',
                                     reply_markup=kb)
+        except ValueError:
+            await message.reply("\U00002620 Вы указали неверное количество валют! Попробуйте еще раз \U00002620",
+                                reply_markup=kb_back)
         except:
             await message.reply("\U00002620 Проверьте название валют \U00002620",
                                 reply_markup=kb_back)
+    else:
+        await message.reply("Выберите функцию!",
+                            reply_markup=kb)

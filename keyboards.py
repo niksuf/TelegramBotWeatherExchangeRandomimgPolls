@@ -1,3 +1,4 @@
+# Файл с клавиатурами
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # Основная клавиатура
