@@ -5,7 +5,7 @@ photos_arr = [
 
 HELP_COMMANDS = """
 /start - начать работу с ботом
-/poll - опрос
+/poll - случайный опрос
 /help - список команд
 """
 
