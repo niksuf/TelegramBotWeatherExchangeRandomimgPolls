@@ -8,10 +8,12 @@ from config import open_weather_token, exchange_rate_token
 from keyboards import kb, kb_back
 from contents import photos_arr, HELP_COMMANDS, polls_pool
 
+# Флаги состояния для погоды/курса валют
 weather_flag = False
 exchange_flag = False
 
 
+# Команда /start
 @dp.message_handler(commands=['start'])
 async def start_command(message: types.Message):
     await message.answer(text="<b>Добро пожаловать</b> в мой телеграм бот!",
@@ -19,16 +21,19 @@ async def start_command(message: types.Message):
                          reply_markup=kb)
 
 
+# Команда /help
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message):
     await bot.send_message(chat_id=message.from_user.id, text=HELP_COMMANDS)
 
 
+# Кнопка "помощь" на клавиатуре
 @dp.message_handler(Text(equals='Помощь'))
 async def send_help(message: types.Message):
     await message.answer(text=HELP_COMMANDS)
 
 
+# Кнопка "погода" на клавиатуре
 @dp.message_handler(Text(equals='Погода'))
 async def send_weather(message: types.Message):
     global weather_flag
@@ -37,6 +42,7 @@ async def send_weather(message: types.Message):
                          reply_markup=kb_back)
 
 
+# Кнопка "Курсы валют" на клавиатуре
 @dp.message_handler(Text(equals='Курсы валют'))
 async def send_exchange(message: types.Message):
     global exchange_flag
@@ -45,18 +51,21 @@ async def send_exchange(message: types.Message):
                          reply_markup=kb_back)
 
 
+# Подменю основной клавиатуры, чтобы вернуться назад
 @dp.message_handler(Text(equals='Назад'))
 async def main_menu(message: types.Message):
     await message.answer(text='Вы в главном меню!',
                          reply_markup=kb)
 
 
+# Кнопка случайной картинки
 @dp.message_handler(Text(equals='Случайная картинка'))
 async def random_img(message: types.Message):
     await bot.send_photo(chat_id=message.chat.id,
                          photo=random.choice(photos_arr))
 
 
+# Команда вызова случайного опроса
 @dp.message_handler(commands=['poll'])
 async def create_poll(message: types.Message):
     poll_question = random.choice(polls_pool)
@@ -70,10 +79,11 @@ async def create_poll(message: types.Message):
                         allows_multiple_answers=True)
 
 
+# Алгоритм получения погоды из введенного пользователем города или курса валют
 @dp.message_handler(Text)
 async def weather_and_exchange(message: types.Message):
     global weather_flag
-    if weather_flag is True:
+    if weather_flag is True:  # Проверяем выбрал ли пользователь погоду
         weather_flag = False
         code_to_smile = {
             "Clear": "Ясно \U00002600",
@@ -84,14 +94,15 @@ async def weather_and_exchange(message: types.Message):
             "Snow": "Снег \U0001F328",
             "Mist": "Туман \U0001F32B"
         }
+        # try - except блок (чтобы если что обработать ошибки)
         try:
-            r = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={message.text}"
+            r = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={message.text}"  # Запрос к api
                              f"&appid={open_weather_token}&units=metric")
             data = r.json()
             city = data["name"]
             cur_weather = data["main"]["temp"]
 
-            weather_description = data["weather"][0]["main"]
+            weather_description = data["weather"][0]["main"]  # Смайлик для погоды
             if weather_description in code_to_smile:
                 wd = code_to_smile[weather_description]
             else:
@@ -105,6 +116,7 @@ async def weather_and_exchange(message: types.Message):
             length_of_the_day = datetime.datetime.fromtimestamp(data["sys"]["sunset"]) - \
                                 datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
 
+            # Ответ бота с прогнозом погоды
             await message.reply(f"\U000023F1{datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
                                 f"Погода в городе: {city}\nТемпература: {cur_weather}C° {wd}\n"
                                 f"Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind} м/с\n"
@@ -115,21 +127,24 @@ async def weather_and_exchange(message: types.Message):
             await message.reply("\U00002620 Проверьте название города \U00002620",
                                 reply_markup=kb_back)
     global exchange_flag
-    if exchange_flag is True:
+    if exchange_flag is True:  # Проверяем выбрал ли пользователь курсы валют
         exchange_flag = False
         payload = {}
         headers = {"apikey": exchange_rate_token}
         coin1, coin2 = message.text.split()
+        # try - except блок (чтобы если что обработать ошибки)
         try:
+            # Сразу пишем сообщение, что бот пошел получать курсы, т.к. они приходят иногда не мгновенно
             await message.reply("Получаю курсы валют...",
                                 reply_markup=kb_back)
+            # get запрос для получения курсов валют в json формате
             r = requests.request("GET",
                                  f"https://api.apilayer.com/exchangerates_data/convert?to={coin2}&from={coin1}&amount=1",
                                  headers=headers,
                                  data=payload)
-            # print(r.status_code)
             result = r.json()
-            if result['success'] is True:
+            if result['success'] is True:  # Проверка на успешность получения курсов
+                # Ответ бота
                 await message.reply(f"Дата: {result['date']}\n"
                                     f"Из {result['query']['from']} в {result['query']['to']}\n"
                                     f"Текущий курс: {result['result']}",
