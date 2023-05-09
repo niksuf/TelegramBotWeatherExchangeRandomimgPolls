@@ -5,7 +5,7 @@ import random
 import datetime
 from main import bot, dp
 from config import open_weather_token, exchange_rate_token
-from keyboards import kb, kb_back
+from keyboards import kb, kb_weather, kb_back
 from contents import photos_arr, HELP_COMMANDS, polls_pool
 
 weather_flag = False
@@ -37,7 +37,7 @@ async def send_weather(message: types.Message):
     global weather_flag
     weather_flag = True
     await message.answer(text='Напиши название города, и я пришлю прогноз погоды!',
-                         reply_markup=kb_back)
+                         reply_markup=kb_weather)
 
 
 @dp.message_handler(Text(equals='Курсы валют'))

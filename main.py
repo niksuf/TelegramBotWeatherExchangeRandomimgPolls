@@ -2,6 +2,7 @@ from aiogram import Bot, Dispatcher, executor
 from config import telegram_token, proxy_url
 
 bot = Bot(token=telegram_token, proxy=proxy_url)
+# bot = Bot(token=telegram_token)
 dp = Dispatcher(bot)
 
 

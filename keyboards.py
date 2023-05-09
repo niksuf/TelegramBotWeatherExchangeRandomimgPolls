@@ -7,6 +7,15 @@ random_img_button = KeyboardButton('Случайная картинка')
 help_button = KeyboardButton('Помощь')
 kb.add(weather_button).insert(exchange_button).insert(random_img_button).add(help_button)
 
+kb_weather = ReplyKeyboardMarkup(resize_keyboard=True)
+moscow_button = KeyboardButton('Москва')
+spb_button = KeyboardButton('Санкт-Петербург')
+izhevsk_button = KeyboardButton('Ижевск')
+dmitrov_button = KeyboardButton('Дмитров')
+weather_back_button = KeyboardButton('Назад')
+kb_weather.add(moscow_button).insert(spb_button).insert(izhevsk_button).insert(dmitrov_button).\
+    insert(weather_back_button)
+
 kb_back = ReplyKeyboardMarkup(resize_keyboard=True)
 back_button = KeyboardButton('Назад')
 kb_back.add(back_button)
