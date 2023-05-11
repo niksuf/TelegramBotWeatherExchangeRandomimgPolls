@@ -5,7 +5,7 @@ import random
 import datetime
 from main import bot, dp
 from config import open_weather_token, exchange_rate_token
-from keyboards import kb, kb_weather, kb_back
+from keyboards import kb, kb_weather, kb_back, kb_exchange
 from contents import photos_arr, HELP_COMMANDS, polls_pool
 
 weather_flag = False
@@ -45,7 +45,7 @@ async def send_exchange(message: types.Message):
     global exchange_flag
     exchange_flag = True
     await message.answer(text='Введите через пробел коды двух валют (например: "USD EUR" или "USD RUB")',
-                         reply_markup=kb_back)
+                         reply_markup=kb_exchange)
 
 
 @dp.message_handler(Text(equals='Назад'))

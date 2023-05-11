@@ -16,6 +16,12 @@ weather_back_button = KeyboardButton('Назад')
 kb_weather.add(moscow_button).insert(spb_button).insert(izhevsk_button).insert(dmitrov_button).\
     insert(weather_back_button)
 
+kb_exchange = ReplyKeyboardMarkup(resize_keyboard=True)
+usd_to_rub_button = KeyboardButton('USD RUB')
+usd_to_eur_button = KeyboardButton('USD EUR')
+exchange_back_button = KeyboardButton('Назад')
+kb_exchange.add(usd_to_rub_button).insert(usd_to_eur_button).add(exchange_back_button)
+
 kb_back = ReplyKeyboardMarkup(resize_keyboard=True)
 back_button = KeyboardButton('Назад')
 kb_back.add(back_button)
